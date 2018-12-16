@@ -64,6 +64,14 @@ def output_file_name(input_file):
     output_file = "{}_regions_added.xlsx".format(root_name)
     return output_file
 
+
+input_file = '2Qdohromady.xlsx'
+user_data = {"country_name": 'CZ',
+            "cities_column": 'A',
+            "regions_column": 'B',
+            "first_row": 5,
+            "last_row": 35}
+
 def get_region(input_file, user_data, output_file):
     """Process :input_file according to :user_data and compare it with regions dataframe.
 
@@ -87,18 +95,11 @@ def get_region(input_file, user_data, output_file):
 
     for row_number in all_rows:
         line = df.iloc[row_number, cities_column_number]
-        print(line) # TODO: Works to here
-        # tesco = df[df[cities_column_number].str.contains("Tesco")] # This works
-        # print(tesco)
-        # df["exists"] = df.drop("target", 1).isin(df["target"]).any(1)
-        # print(df)
-        df[regions_column_number] = df_regions[1:, 0].isin(df[cities_column_number]).fillna("") # any(1, skipna=True) # TODO: will have to use str.match or
-        print(df[cities_column_number])
-        """
-            print("Is here.")
-        else:
-            print("Didn't find any.")
-        """
+        match = df_regions.iloc[:, 0].apply(lambda district: district in line)
+        region_name = df_regions.loc[match, 'Kraj']
+        if not region_name.empty:
+            df.iloc[row_number, regions_column_number] = region_name.iloc[0]
+
     wb.save(output_file)
     print("Regions successfully matched to cities in", output_file)
 
