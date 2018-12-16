@@ -20,3 +20,6 @@ for row_number in all_rows:
             ws.cell(row=row_number + 1, column=user_data["regions_column"]).value = found_region
     wb.save(output_file)
     print("Regions successfully matched to cities in", output_file)
+
+if df[df[cities_column_number].str.contains(df_regions["Okres"])]:  # TODO: will have to use str.match or
+# .apply instead
