@@ -23,12 +23,15 @@ def input_file_check():
     input_file = input("Put the .xlsx file with shops to the same directory, where you put "
                         "the file you are currently running. What is the name "
                         "of the .xlsx file? (Write it as filename.xlsx) ")
-    if os.path.exists(input_file) is False:
-        print("Such file does not exist. Did you put it into a right directory? "
+    while True:
+        if os.path.exists(input_file) is False:
+            print("Such file does not exist. Did you put it into a right directory? "
                   "Is the name of the file right? Try again.")
-    if input_file.lower().endswith('.xlsx') is False:
-        print("I cannot process such file. Give me a file with .xlsx extension "
+            input_file = input_file_check()
+        if input_file.lower().endswith('.xlsx') is False:
+            print("I cannot process such file. Give me a file with .xlsx extension "
                 "(Excel file of version 2007 and later.)")
+            input_file = input_file_check()
     return input_file # TODO: Check why it is not working properly with incorrect data
 
 
@@ -64,8 +67,8 @@ def output_file_name(input_file):
     output_file = "{}_regions_added.xlsx".format(root_name)
     return output_file
 
-
-input_file = '2Qdohromady.xlsx'
+# Below see hard data for testing purposes
+input_file = 'kvartal.xlsx'
 user_data = {"country_name": 'CZ',
             "cities_column": 'A',
             "regions_column": 'B',
@@ -90,7 +93,8 @@ def get_region(input_file, user_data, output_file):
     finish = int(user_data["last_row"]) - 1
     all_rows = range(start, finish)
 
-    wb = load_workbook(output_file)
+    writer = pd.ExcelWriter(output_file)
+    # wb = load_workbook(output_file)
     # ws = wb.active
 
     for row_number in all_rows:
@@ -99,8 +103,8 @@ def get_region(input_file, user_data, output_file):
         region_name = df_regions.loc[match, 'Kraj']
         if not region_name.empty:
             df.iloc[row_number, regions_column_number] = region_name.iloc[0]
-
-    wb.save(output_file)
+    df.to_excel(writer)
+    # wb.save(output_file)
     print("Regions successfully matched to cities in", output_file)
 
 
