@@ -4,7 +4,6 @@ import os
 from sys import exit
 import pandas as pd
 from shutil import copyfile
-from openpyxl import load_workbook
 from openpyxl.utils import column_index_from_string
 
 
@@ -21,18 +20,20 @@ def input_file_check():
     :return Name of the input file.
     """
     input_file = input("Put the .xlsx file with shops to the same directory, where you put "
-                        "the file you are currently running. What is the name "
-                        "of the .xlsx file? (Write it as filename.xlsx) ")
+                       "the file you are currently running. What is the name "
+                       "of the .xlsx file? (Write it as filename.xlsx) ")
     while True:
         if os.path.exists(input_file) is False:
             print("Such file does not exist. Did you put it into a right directory? "
-                  "Is the name of the file right? Try again.")
-            input_file = input_file_check()
+                  "Is the name of the file right?")
+            input_file = input("Try again: ")
         if input_file.lower().endswith('.xlsx') is False:
             print("I cannot process such file. Give me a file with .xlsx extension "
-                "(Excel file of version 2007 and later.)")
-            input_file = input_file_check()
-    return input_file # TODO: Check why it is not working properly with incorrect data
+                  "(Excel file of version 2007 and later.)")
+            input_file = input("Try again: ")
+        break
+
+    return input_file
 
 
 def user_data():
@@ -55,11 +56,8 @@ def user_data():
 
 def output_file_name(input_file):
     """Create output file.
-
     Create output file as a copy of the input file with the right name.
-
     :return Name of the output file.
-
     """
     file_name_split = os.path.splitext(input_file)
     root_name = file_name_split[0]
@@ -67,17 +65,9 @@ def output_file_name(input_file):
     output_file = "{}_regions_added.xlsx".format(root_name)
     return output_file
 
-# Below see hard data for testing purposes
-input_file = 'kvartal.xlsx'
-user_data = {"country_name": 'CZ',
-            "cities_column": 'A',
-            "regions_column": 'B',
-            "first_row": 5,
-            "last_row": 35}
 
 def get_region(input_file, user_data, output_file):
     """Process :input_file according to :user_data and compare it with regions dataframe.
-
     Open the input file, read data, match cities with regions for each line by comparing
     them to the regions dataframe, and store region names to a new file.
     :param dict[str] user_data: Input data with info about processing the file.
@@ -94,17 +84,17 @@ def get_region(input_file, user_data, output_file):
     all_rows = range(start, finish)
 
     writer = pd.ExcelWriter(output_file)
-    # wb = load_workbook(output_file)
-    # ws = wb.active
+    # wb = load_workbook(output_file) - to be deleted
+    # ws = wb.active - to be deleted - to be deleted
 
     for row_number in all_rows:
         line = df.iloc[row_number, cities_column_number]
-        match = df_regions.iloc[:, 0].apply(lambda district: district in line)
+        match = df_regions.iloc[:,0].apply(lambda district: district in line)
         region_name = df_regions.loc[match, 'Kraj']
         if not region_name.empty:
             df.iloc[row_number, regions_column_number] = region_name.iloc[0]
+    print(df) # TODO: the function is not generating regions
     df.to_excel(writer)
-    # wb.save(output_file)
     print("Regions successfully matched to cities in", output_file)
 
 
