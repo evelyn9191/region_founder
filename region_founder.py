@@ -67,7 +67,8 @@ def output_file_name(input_file):
 
 
 def get_region(input_file, user_data, output_file):
-    """Process :input_file according to :user_data and compare it with regions dataframe.
+    """Process :input_file according to :user_data, compare it with regions dataframe and save correct output.
+
     Open the input file, read data, match cities with regions for each line by comparing
     them to the regions dataframe, and store region names to a new file.
     :param dict[str] user_data: Input data with info about processing the file.
@@ -84,8 +85,6 @@ def get_region(input_file, user_data, output_file):
     all_rows = range(start, finish)
 
     writer = pd.ExcelWriter(output_file)
-    # wb = load_workbook(output_file) - to be deleted
-    # ws = wb.active - to be deleted - to be deleted
 
     for row_number in all_rows:
         line = df.iloc[row_number, cities_column_number]
@@ -93,9 +92,9 @@ def get_region(input_file, user_data, output_file):
         region_name = df_regions.loc[match, 'Kraj']
         if not region_name.empty:
             df.iloc[row_number, regions_column_number] = region_name.iloc[0]
-    print(df) # TODO: the function is not generating regions
-    df.to_excel(writer)
-    print("Regions successfully matched to cities in", output_file)
+    df.to_excel(writer, header=False, index=False)
+    writer.save()
+    print("Regions successfully matched to cities and saved in", output_file)
 
 
 if __name__ == "__main__":
