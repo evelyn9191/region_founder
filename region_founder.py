@@ -1,7 +1,11 @@
-"""Fill name of regions to chosen Excel sheet based on city location."""
+# Region Founder script takes names of towns and matches each of them with town names
+# in dataframe 'Kraje'. When match is found, name of region for the town is assigned
+# to the town from input data. The match is then saved with all other data from the input
+# file to output Excel file. The principle is similar to VLOOKUP function in Excel.
 
 import os
 from sys import exit
+
 import pandas as pd
 from shutil import copyfile
 from openpyxl.utils import column_index_from_string
@@ -17,28 +21,28 @@ def regions_file_check():
 
 def input_file_check():
     """Get input file name. Check if it exists.
+
     :return Name of the input file.
     """
     input_file = input("Put the .xlsx file with shops to the same directory, where you put "
                        "the file you are currently running. What is the name "
                        "of the .xlsx file? (Write it as filename.xlsx) ")
-    while True:
-        if os.path.exists(input_file) is False:
-            print("Such file does not exist. Did you put it into a right directory? "
-                  "Is the name of the file right?")
-            input_file = input("Try again: ")
-        if input_file.lower().endswith('.xlsx') is False:
-            print("I cannot process such file. Give me a file with .xlsx extension "
-                  "(Excel file of version 2007 and later.)")
-            input_file = input("Try again: ")
-        break
-
+    while os.path.exists(input_file) is False:
+        print("Such file does not exist. Did you put it into a right directory? "
+              "Is the name of the file right?")
+        input_file = input("Try again: ")
+    while input_file.lower().endswith('.xlsx') is False:
+        print("I cannot process such file. Give me a file with .xlsx extension "
+              "(Excel file of version 2007 and later.)")
+        input_file = input("Try again: ")
     return input_file
 
 
 def user_data():
     """Get input data.
+
     Get specific descriptions of relevant columns and country name.
+
     :return Input data.
     """
     country = input("What is the country where the shops are located? (Type CZ or SR) ")
@@ -54,9 +58,12 @@ def user_data():
             "last_row": finish
             }
 
+
 def output_file_name(input_file):
     """Create output file.
+
     Create output file as a copy of the input file with the right name.
+
     :return Name of the output file.
     """
     file_name_split = os.path.splitext(input_file)
@@ -67,11 +74,12 @@ def output_file_name(input_file):
 
 
 def get_region(input_file, user_data, output_file):
-    """Process :input_file according to :user_data, compare it with regions dataframe and save correct output.
+    """Process :input_file according to :user_data, compare it with regions dataframe
+    and save correct output.
 
     Open the input file, read data, match cities with regions for each line by comparing
     them to the regions dataframe, and store region names to a new file.
-    :param dict[str] user_data: Input data with info about processing the file.
+    :param dict user_data: Input data containing information on data placement format.
     :param str input_file: Name of the file to process.
     :param str output_file: Name of the file where to save final data.
     """
