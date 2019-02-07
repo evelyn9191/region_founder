@@ -5,9 +5,9 @@
 
 import os
 from sys import exit
+from shutil import copyfile
 
 import pandas as pd
-from shutil import copyfile
 from openpyxl.utils import column_index_from_string
 
 
